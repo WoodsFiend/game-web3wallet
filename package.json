@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.html",
   "homepage": "https://game.polychainmonsters.com/web3wallet",
+  "type": "module",
   "scripts": {
     "start": "parcel index.html --open",
     "build": "parcel build ./index.html --public-url /web3wallet --target node --bundle-node-modules --out-dir ./dist --no-minify --out-file index.html"
