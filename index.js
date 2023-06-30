@@ -1,10 +1,19 @@
-const { EthereumClient, w3mConnectors, w3mProvider } = require('@web3modal/ethereum');
-const { Web3Modal } = require('@web3modal/html');
-const { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } = require('@wagmi/core');
-const { arbitrum, mainnet, polygon } = require('@wagmi/core/chains');
-const { parseEther } = require('viem');
+import { EthereumClient } from '@web3modal/ethereum'
+import { w3mConnectors } from '@web3modal/ethereum'
+import { w3mProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/html'
+import { configureChains } from '@wagmi/core'
+import { createConfig } from '@wagmi/core'
+import { getAccount } from '@wagmi/core'
+import { getNetwork } from '@wagmi/core'
+import { signMessage } from '@wagmi/core'
+import { sendTransaction } from '@wagmi/core'
+import { switchNetwork } from '@wagmi/core'
+import { mainnet } from '@wagmi/core/chains'
+import { polygon } from '@wagmi/core/chains'
+import { parseEther } from 'viem';
 
-const chains = [arbitrum, mainnet, polygon]
+const chains = [mainnet, polygon]
 const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])

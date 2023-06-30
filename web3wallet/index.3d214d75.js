@@ -574,37 +574,36 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"bB7Pu":[function(require,module,exports) {
-const { EthereumClient, w3mConnectors, w3mProvider } = require("56cc05834e4f5a6b");
-const { Web3Modal } = require("781ef6cd802885c2");
-const { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } = require("f399cf1c67ffb947");
-const { arbitrum, mainnet, polygon } = require("9493515901af04d0");
-const { parseEther } = require("75520f637bc2f8df");
+var _ethereum = require("@web3modal/ethereum");
+var _html = require("@web3modal/html");
+var _core = require("@wagmi/core");
+var _chains = require("@wagmi/core/chains");
+var _viem = require("viem");
 const chains = [
-    arbitrum,
-    mainnet,
-    polygon
+    (0, _chains.mainnet),
+    (0, _chains.polygon)
 ];
 const projectId = "8cb9d988c38d5dafd5fbe1f639fd6ff7";
-const { publicClient } = configureChains(chains, [
-    w3mProvider({
+const { publicClient } = (0, _core.configureChains)(chains, [
+    (0, _ethereum.w3mProvider)({
         projectId
     })
 ]);
-const wagmiConfig = createConfig({
+const wagmiConfig = (0, _core.createConfig)({
     autoConnect: true,
-    connectors: w3mConnectors({
+    connectors: (0, _ethereum.w3mConnectors)({
         projectId,
         chains
     }),
     publicClient
 });
-const ethereumClient = new EthereumClient(wagmiConfig, chains);
-const web3modal = new Web3Modal({
+const ethereumClient = new (0, _ethereum.EthereumClient)(wagmiConfig, chains);
+const web3modal = new (0, _html.Web3Modal)({
     projectId
 }, ethereumClient);
 document.addEventListener("DOMContentLoaded", loadApp());
 async function loadApp() {
-    const account = getAccount();
+    const account = (0, _core.getAccount)();
     //web3modal.subscribeModal(() => processAction())
     web3modal.subscribeEvents((modalEvent)=>handleEvents(modalEvent));
     if (account.isConnected) processAction();
@@ -624,7 +623,7 @@ async function handleEvents(modalEvent) {
     }
 }
 async function processAction() {
-    const account = getAccount();
+    const account = (0, _core.getAccount)();
     //Don't process if no account is connected
     if (!account.isConnected || account.isConnecting) return;
     const urlParams = new URLSearchParams(window.location.search);
@@ -639,7 +638,7 @@ async function processAction() {
     if (action === "sign" && message) return signWagmiMessage(message);
     if (action === "send" && to && value) return sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data);
     if (action === "auth" && message) {
-        let account = getAccount();
+        let account = (0, _core.getAccount)();
         //get the signing message using the message
         let response = await fetch(message + "/functions/requestMessage?address=" + account.address + "&chain=001", {
             method: "POST"
@@ -653,15 +652,15 @@ async function processAction() {
 async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data) {
     try {
         await new Promise((resolve)=>setTimeout(resolve, 1000));
-        const network = await getNetwork();
-        if (network.chainId !== chainId) await switchNetwork({
+        const network = await (0, _core.getNetwork)();
+        if (network.chainId !== chainId) await (0, _core.switchNetwork)({
             chainId: `0x${parseInt(chainId, 10).toString(16)}`
         });
-        const from = getAccount();
-        const tx = await sendTransaction({
+        const from = (0, _core.getAccount)();
+        const tx = await (0, _core.sendTransaction)({
             account: from,
             to: to,
-            value: parseEther(value)
+            value: (0, _viem.parseEther)(value)
         });
         console.log({
             tx
@@ -675,7 +674,7 @@ async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data
 async function authSignMessage(message) {
     try {
         await new Promise((resolve)=>setTimeout(resolve, 3000));
-        const signature = await signMessage({
+        const signature = await (0, _core.signMessage)({
             message: message
         });
         console.log({
@@ -694,7 +693,7 @@ async function authSignMessage(message) {
 async function signWagmiMessage(message) {
     try {
         await new Promise((resolve)=>setTimeout(resolve, 3000));
-        const signature = await signMessage({
+        const signature = await (0, _core.signMessage)({
             message: message
         });
         console.log({
@@ -738,7 +737,7 @@ function displayResponse(text, response) {
     }
 }
 
-},{"56cc05834e4f5a6b":"37UAX","781ef6cd802885c2":"4Skid","f399cf1c67ffb947":"cDeGj","9493515901af04d0":"fjq96","75520f637bc2f8df":"eKtik"}],"37UAX":[function(require,module,exports) {
+},{"@web3modal/ethereum":"37UAX","@web3modal/html":"4Skid","@wagmi/core":"cDeGj","@wagmi/core/chains":"fjq96","viem":"eKtik"}],"37UAX":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "EthereumClient", ()=>j);
@@ -27059,7 +27058,7 @@ class c {
     }
 }
 
-},{"@web3modal/core":"7c76x","fd357b106249294e":"d73tZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7c76x":[function(require,module,exports) {
+},{"@web3modal/core":"7c76x","fd357b106249294e":"2MWYC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7c76x":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "AccountCtrl", ()=>H);
@@ -29638,19 +29637,19 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
     buffer[offset + i - d] |= s * 128;
 };
 
-},{}],"d73tZ":[function(require,module,exports) {
+},{}],"2MWYC":[function(require,module,exports) {
 module.exports = Promise.all([
-    require("ab7345dad8e3bbdd")(require("a80ec22d471a2b7a").getBundleURL("UckoE") + "dist.6d0255d4.js" + "?" + Date.now()).catch((err)=>{
+    require("586a4d403262d85d")(require("312bd353832b3abd").getBundleURL("UckoE") + "dist.cfc2dba3.js" + "?" + Date.now()).catch((err)=>{
         delete module.bundle.cache[module.id];
         throw err;
     }),
-    require("ab7345dad8e3bbdd")(require("a80ec22d471a2b7a").getBundleURL("UckoE") + "dist.6909d6fe.js" + "?" + Date.now()).catch((err)=>{
+    require("586a4d403262d85d")(require("312bd353832b3abd").getBundleURL("UckoE") + "dist.6909d6fe.js" + "?" + Date.now()).catch((err)=>{
         delete module.bundle.cache[module.id];
         throw err;
     })
 ]).then(()=>module.bundle.root("jCFDj"));
 
-},{"ab7345dad8e3bbdd":"61B45","a80ec22d471a2b7a":"lgJ39"}],"fjq96":[function(require,module,exports) {
+},{"586a4d403262d85d":"61B45","312bd353832b3abd":"lgJ39"}],"fjq96":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "arbitrum", ()=>(0, _chunkD7TYCC3TJs.arbitrum));
