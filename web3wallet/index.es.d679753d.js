@@ -18801,15 +18801,9 @@ parcelHelpers.export(exports, "WsConnection", ()=>WsConnection);
 var _events = require("events");
 var _safeJson = require("@walletconnect/safe-json");
 var _jsonrpcUtils = require("@walletconnect/jsonrpc-utils");
-var global = arguments[3];
+var _utils = require("./utils");
 const EVENT_EMITTER_MAX_LISTENERS_DEFAULT = 10;
-const resolveWebSocketImplementation = ()=>{
-    if (typeof global !== "undefined" && typeof global.WebSocket !== "undefined") return global.WebSocket;
-    if (typeof window !== "undefined" && typeof window.WebSocket !== "undefined") return window.WebSocket;
-    return require("3a279a7c44eb7561");
-};
-const isBrowser = ()=>typeof window !== "undefined";
-const WS = resolveWebSocketImplementation();
+const WS = (0, _utils.resolveWebSocketImplementation)();
 class WsConnection {
     constructor(url){
         this.url = url;
@@ -18884,7 +18878,7 @@ class WsConnection {
                 rejectUnauthorized: !(0, _jsonrpcUtils.isLocalhostUrl)(url)
             } : undefined;
             const socket = new WS(url, [], opts);
-            if (isBrowser()) socket.onerror = (event)=>{
+            if ((0, _utils.isBrowser)()) socket.onerror = (event)=>{
                 const errorEvent = event;
                 reject(this.emitError(errorEvent.error));
             };
@@ -18921,20 +18915,35 @@ class WsConnection {
         this.events.emit("payload", payload);
     }
     parseError(e, url = this.url) {
-        return (0, _jsonrpcUtils.parseConnectionError)(e, url, "WS");
+        return (0, _jsonrpcUtils.parseConnectionError)(e, (0, _utils.truncateQuery)(url), "WS");
     }
     resetMaxListeners() {
         if (this.events.getMaxListeners() > EVENT_EMITTER_MAX_LISTENERS_DEFAULT) this.events.setMaxListeners(EVENT_EMITTER_MAX_LISTENERS_DEFAULT);
     }
     emitError(errorEvent) {
-        const error = this.parseError(new Error((errorEvent === null || errorEvent === void 0 ? void 0 : errorEvent.message) || `WebSocket connection failed for URL: ${this.url}`));
+        const error = this.parseError(new Error((errorEvent === null || errorEvent === void 0 ? void 0 : errorEvent.message) || `WebSocket connection failed for host: ${(0, _utils.truncateQuery)(this.url)}`));
         this.events.emit("register_error", error);
         return error;
     }
 }
 exports.default = WsConnection;
 
-},{"events":"1VQLm","@walletconnect/safe-json":"cD1pC","@walletconnect/jsonrpc-utils":"izCJ8","3a279a7c44eb7561":"4OuWD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4OuWD":[function(require,module,exports) {
+},{"events":"1VQLm","@walletconnect/safe-json":"cD1pC","@walletconnect/jsonrpc-utils":"izCJ8","./utils":"eQudw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eQudw":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "resolveWebSocketImplementation", ()=>resolveWebSocketImplementation);
+parcelHelpers.export(exports, "isBrowser", ()=>isBrowser);
+parcelHelpers.export(exports, "truncateQuery", ()=>truncateQuery);
+var global = arguments[3];
+const resolveWebSocketImplementation = ()=>{
+    if (typeof global !== "undefined" && typeof global.WebSocket !== "undefined") return global.WebSocket;
+    if (typeof window !== "undefined" && typeof window.WebSocket !== "undefined") return window.WebSocket;
+    return require("86ce241911116a7");
+};
+const isBrowser = ()=>typeof window !== "undefined";
+const truncateQuery = (wssUrl)=>wssUrl.split("?")[0];
+
+},{"86ce241911116a7":"4OuWD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4OuWD":[function(require,module,exports) {
 "use strict";
 module.exports = function() {
     throw new Error("ws does not work in the browser. Browser clients must use the native WebSocket object");
