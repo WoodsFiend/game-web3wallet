@@ -1,24 +1,3 @@
-const { EthereumClient, w3mConnectors, w3mProvider } = require('@web3modal/ethereum');
-const { Web3Modal } = require('@web3modal/html');
-const { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } = require('@wagmi/core');
-const { arbitrum, mainnet, polygon } = require('@wagmi/core/chains');
-const { parseEther } =  require('viem');
-
-const chains = [arbitrum, mainnet, polygon]
-const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
-
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient
-})
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
-const themeVariables = {
-    '--w3m-logo-image-url': "https://framerusercontent.com/images/nOSlsFab9TFsDwcOYOAZ3dBhh8.png"
-}
-const web3modal = new Web3Modal({ projectId, themeVariables }, ethereumClient)
-
 // modules are defined as an array
 // [ module function, map of requires ]
 //
@@ -30449,13 +30428,27 @@ Object.defineProperty(exports, "Utf8ErrorReason", { enumerable: true, get: funct
 "use strict";
 
 require("regenerator-runtime/runtime");
+const { EthereumClient, w3mConnectors, w3mProvider } = require("@web3modal/ethereum");
+const { Web3Modal } = require("@web3modal/html");
+const { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } = require("@wagmi/core");
+const { arbitrum, mainnet, polygon } = require("@wagmi/core/chains");
+const { parseEther } =  require("viem");
 
-var _ethers = require("ethers");
+const chains = [arbitrum, mainnet, polygon]
+const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
 
-var _utils = require("ethers/lib/utils");
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient
+})
+const ethereumClient = new EthereumClient(wagmiConfig, chains)
+const themeVariables = {
+    '--w3m-logo-image-url': "https://framerusercontent.com/images/nOSlsFab9TFsDwcOYOAZ3dBhh8.png"
+}
+const web3modal = new Web3Modal({ projectId, themeVariables }, ethereumClient);
 
-let provider;
-let signer;
 document.addEventListener("DOMContentLoaded", loadApp());
 
 async function loadApp() {
