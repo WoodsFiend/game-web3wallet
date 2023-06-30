@@ -6,7 +6,7 @@
   "browserslist": "> 0.25%, not dead",
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build ./index.html --dist-dir web3wallet"
+    "build": "parcel build ./index.html --public-url /web3wallet --dist-dir web3wallet"
   },
   "dependencies": {
     "@wagmi/core": "^1.3.3",
