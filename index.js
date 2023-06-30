@@ -1,7 +1,8 @@
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { Web3Modal } from '@web3modal/html'
-import { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } from '@wagmi/core'
-import { arbitrum, mainnet, polygon } from '@wagmi/core/chains'
+const { EthereumClient, w3mConnectors, w3mProvider } = require('@web3modal/ethereum');
+const { Web3Modal } = require('@web3modal/html');
+const { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } = require('@wagmi/core');
+const { arbitrum, mainnet, polygon } = require('@wagmi/core/chains');
+const { parseEther } = require('viem');
 
 const chains = [arbitrum, mainnet, polygon]
 const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
@@ -14,8 +15,6 @@ const wagmiConfig = createConfig({
 })
 const ethereumClient = new EthereumClient(wagmiConfig, chains)
 const web3modal = new Web3Modal({ projectId }, ethereumClient)
-
-var _utils = require("ethers/lib/utils");
 
 document.addEventListener("DOMContentLoaded", loadApp());
 
