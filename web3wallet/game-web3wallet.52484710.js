@@ -1,24 +1,3 @@
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { Web3Modal } from '@web3modal/html'
-import { configureChains, createConfig, getAccount, getNetwork, signMessage, sendTransaction, switchNetwork } from '@wagmi/core'
-import { arbitrum, mainnet, polygon } from '@wagmi/core/chains'
-import { parseEther } from 'viem'
-
-const chains = [arbitrum, mainnet, polygon]
-const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
-
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient
-})
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
-const themeVariables = {
-    '--w3m-logo-image-url': "https://framerusercontent.com/images/nOSlsFab9TFsDwcOYOAZ3dBhh8.png"
-}
-const web3modal = new Web3Modal({ projectId, themeVariables }, ethereumClient)
-
 // modules are defined as an array
 // [ module function, map of requires ]
 //
@@ -30459,38 +30438,14 @@ let signer;
 document.addEventListener("DOMContentLoaded", loadApp());
 
 async function loadApp() {
-    const account = getAccount();
-    //web3modal.subscribeModal(() => processAction())
-    web3modal.subscribeEvents(modalEvent => handleEvents(modalEvent));
-    if(account.isConnected){
-        processAction();
-    }
-    else{
-        await web3modal.openModal();
-        //wait for connection
-    }
-}
-
-async function handleEvents(modalEvent){
-    const CONNECTED = "ACCOUNT_CONNECTED";
-    const DISCONNECTED = "ACCOUNT_DISCONNECTED";
-    if(modalEvent.name == CONNECTED){
-        processAction();
-    }
-    else if (modalEvent.name == DISCONNECTED){
-        const responseText = document.getElementById("response-text");
-        responseText.innerHTML = "";
-        responseText.className = "";
-        const responseButton = document.getElementById("response-button");
-        responseButton.className = "";
-        responseButton.innerHTML = "Copy";
-    }
+  provider = new _ethers.ethers.providers.Web3Provider(window.ethereum, "any");
+  signer = provider.getSigner();
+  if (!signer) window.location.reload();
+  await provider.send("eth_requestAccounts", []);
+  processAction();
 }
 
 async function processAction() {
-  const account = getAccount();
-  //Don't process if no account is connected
-  if(!account.isConnected || account.isConnecting) return;
   const urlParams = new URLSearchParams(window.location.search);
   const action = urlParams.get("action");
   const message = urlParams.get("message");
@@ -30502,17 +30457,17 @@ async function processAction() {
   const gasPrice = urlParams.get("gasPrice") || undefined;
 
   if (action === "sign" && message) {
-    return signWagmiMessage(message);
+    return signMessage(message);
   }
 
   if (action === "send" && to && value) {
-    return sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data);
+    return sendTransaction(chainId, to, value, gasLimit, gasPrice, data);
   }
 
   if(action === "auth" && message) {
-    let account = getAccount();
+    let myAddress = await signer.getAddress();
     //get the signing message using the message
-    let response = await fetch(message + '/functions/requestMessage?address=' + account.address + '&chain=001',
+    let response = await fetch(message + '/functions/requestMessage?address=' + myAddress + '&chain=001',
         {
             method:'POST'
         }
@@ -30525,22 +30480,29 @@ async function processAction() {
   displayResponse("Invalid URL");
 }
 
-async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data) {
+async function sendTransaction(chainId, to, value, gasLimit, gasPrice, data) {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    const network = await getNetwork();
+    const network = await provider.getNetwork();
 
     if (network.chainId !== chainId) {
-      await switchNetwork({
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{
           chainId: `0x${parseInt(chainId, 10).toString(16)}`
+        }] // chainId must be in hexadecimal numbers
+
       });
     }
 
-    const from = getAccount();
-    const tx = await sendTransaction({
-      account: from,
-      to: to,
-      value: parseEther(value),
+    const from = await signer.getAddress();
+    const tx = await signer.sendTransaction({
+      from,
+      to,
+      value: (0, _utils.parseUnits)(value, "wei"),
+      gasLimit: gasLimit ? (0, _utils.hexlify)(Number(gasLimit)) : gasLimit,
+      gasPrice: gasPrice ? (0, _utils.hexlify)(Number(gasPrice)) : gasPrice,
+      data: data ? data : "0x"
     });
     console.log({
       tx
@@ -30554,8 +30516,8 @@ async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data
 
 async function authSignMessage(message) {
     try {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      const signature = await signMessage({message:message});
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const signature = await signer.signMessage(message);
       console.log({
         signature
       });
@@ -30567,10 +30529,10 @@ async function authSignMessage(message) {
     }
   }
 
-async function signWagmiMessage(message) {
+async function signMessage(message) {
   try {
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    const signature = await signMessage({message:message});
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const signature = await signer.signMessage(message);
     console.log({
       signature
     });
