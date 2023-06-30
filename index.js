@@ -11,6 +11,7 @@ import { sendTransaction } from '@wagmi/core'
 import { switchNetwork } from '@wagmi/core'
 import { mainnet } from '@wagmi/core/chains'
 import { polygon } from '@wagmi/core/chains'
+import { parseEther } from 'viem';
 
 const chains = [mainnet, polygon]
 const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
@@ -23,8 +24,6 @@ const wagmiConfig = createConfig({
 })
 const ethereumClient = new EthereumClient(wagmiConfig, chains)
 const web3modal = new Web3Modal({ projectId }, ethereumClient)
-
-var _utils = require("ethers/lib/utils");
 
 document.addEventListener("DOMContentLoaded", loadApp());
 
