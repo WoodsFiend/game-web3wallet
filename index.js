@@ -1,62 +1,52 @@
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi'
-import { reconnect } from '@wagmi/core'
-
+import { EthereumClient } from '@web3modal/ethereum'
+import { w3mConnectors } from '@web3modal/ethereum'
+import { w3mProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/html'
+import { configureChains } from '@wagmi/core'
+import { createConfig } from '@wagmi/core'
 import { getAccount } from '@wagmi/core'
+import { getNetwork } from '@wagmi/core'
 import { signMessage } from '@wagmi/core'
 import { sendTransaction } from '@wagmi/core'
-import { switchChain } from '@wagmi/core'
-import { mainnet, polygon } from '@wagmi/core/chains'
+import { switchNetwork } from '@wagmi/core'
+import { mainnet } from '@wagmi/core/chains'
+import { polygon } from '@wagmi/core/chains'
 import { parseEther } from 'viem';
 
 const chains = [mainnet, polygon]
 const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
-const path = window.location.href.split('?')[0];
-const metadata = {
-    name: 'Polychain Islands',
-    description: 'Login to Polychain Islands',
-    url: path, // origin must match your domain & subdomain.
-    icons: [path + 'logo.png']
-  }
-export const config = defaultWagmiConfig({
-    chains,
-    projectId,
-    metadata,
+
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient
 })
-//reconnect(config)
-// 3. Create modal
-const web3modal = createWeb3Modal({
-    wagmiConfig: config,
-    projectId,
-    themeMode: 'dark'
-})
+const ethereumClient = new EthereumClient(wagmiConfig, chains)
+const web3modal = new Web3Modal({ projectId }, ethereumClient)
 
 document.addEventListener("DOMContentLoaded", loadApp());
 
 async function loadApp() {
-    await reconnect(config);
-
-    const account = await getAccount(config);
+    const account = getAccount();
     //web3modal.subscribeModal(() => processAction())
-    web3modal.subscribeEvents(modalEvent => handleEvents(modalEvent.data.event));
-    
-    //This is not working to catch account already connected
+    web3modal.subscribeEvents(modalEvent => handleEvents(modalEvent));
     if(account.isConnected){
         processAction();
     }
     else{
-        await web3modal.open();
+        await web3modal.openModal();
         //wait for connection
     }
 }
 
 async function handleEvents(modalEvent){
-    const CONNECTED = "CONNECT_SUCCESS";
-    const DISCONNECTED = "DISCONNECT_SUCCESS";
-    console.log("HandleEvent: " + modalEvent);
-    if(modalEvent == CONNECTED){
+    const CONNECTED = "ACCOUNT_CONNECTED";
+    const DISCONNECTED = "ACCOUNT_DISCONNECTED";
+    if(modalEvent.name == CONNECTED){
         processAction();
     }
-    else if (modalEvent == DISCONNECTED){
+    else if (modalEvent.name == DISCONNECTED){
         const responseText = document.getElementById("response-text");
         responseText.innerHTML = "";
         responseText.className = "";
@@ -67,7 +57,7 @@ async function handleEvents(modalEvent){
 }
 
 async function processAction() {
-  const account = getAccount(config);
+  const account = getAccount();
   //Don't process if no account is connected
   if(!account.isConnected || account.isConnecting) return;
   const urlParams = new URLSearchParams(window.location.search);
@@ -89,7 +79,7 @@ async function processAction() {
   }
 
   if(action === "auth" && message) {
-    let account = getAccount(config);
+    let account = getAccount();
     //get the signing message using the message
     let response = await fetch(message + '/functions/requestMessage?address=' + account.address + '&chain=001',
         {
@@ -107,15 +97,16 @@ async function processAction() {
 async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data) {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    const account = getAccount(config); 
-    if (account.chainId !== chainId) {
-      await switchChain(config, {
+    const network = await getNetwork();
+
+    if (network.chainId !== chainId) {
+      await switchNetwork({
           chainId: `0x${parseInt(chainId, 10).toString(16)}`
       });
     }
 
-    const from = getAccount(config);
-    const tx = await sendTransaction(config, {
+    const from = getAccount();
+    const tx = await sendTransaction({
       account: from,
       to: to,
       value: parseEther(value),
@@ -133,7 +124,7 @@ async function sendWagmiTransaction(chainId, to, value, gasLimit, gasPrice, data
 async function authSignMessage(message) {
     try {
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const signature = await signMessage(config, {message:message});
+      const signature = await signMessage({message:message});
       console.log({
         signature
       });
@@ -148,7 +139,7 @@ async function authSignMessage(message) {
 async function signWagmiMessage(message) {
   try {
     await new Promise(resolve => setTimeout(resolve, 3000));
-    const signature = await signMessage(config, {message:message});
+    const signature = await signMessage({message:message});
     console.log({
       signature
     });

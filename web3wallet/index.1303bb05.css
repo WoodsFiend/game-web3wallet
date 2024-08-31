@@ -3,9 +3,9 @@
 }
 
 .center {
-  display: block;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  display: block;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -19,14 +19,14 @@
 }
 
 #logo img {
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 
 #response-text {
-  transition-duration: 200ms;
   opacity: 0;
   visibility: hidden;
+  transition-duration: .2s;
 }
 
 #response-text.active {
@@ -35,19 +35,17 @@
 }
 
 #response-button {
-  border: none;
-  transition-duration: 200ms;
   opacity: 0;
   visibility: hidden;
-  background-color: white;
-  border: 1px solid #037dd6;
-  font-weight: bold;
   color: #037dd6;
+  background-color: #fff;
+  border: 1px solid #037dd6;
   border-radius: 100px;
-  margin: 10px;
-  margin-top: 21px;
-  height: 45px;
   width: 170px;
+  height: 45px;
+  margin: 21px 10px 10px;
+  font-weight: bold;
+  transition-duration: .2s;
 }
 
 #response-button.active {
@@ -57,5 +55,7 @@
 
 #response-button:hover {
   cursor: pointer;
-  box-shadow: lightgray 0px 0px 10px;
+  box-shadow: 0 0 10px #d3d3d3;
 }
+
+/*# sourceMappingURL=index.1303bb05.css.map */
