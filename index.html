@@ -11,21 +11,23 @@
   </head>
 
   <body>
+    <style>body {
+          background-image: url('/bg-img.png');
+            background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-size: cover;
+        }</style>
     <div id="app">
       <div class="center">
         <div id="logo">
           <img src="/logo.png" alt="Polychain Islands">
         </div>
-        <w3m-button class="center" style="padding-top: 80; --wui-color-gray-glass-002:#5773ff; --wui-color-gray-glass-005:rgba(87, 115, 255,0.75); --wui-color-gray-glass-010:rgba(87, 115, 255,0.5);"></w3m-button>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        <br>
+        <w3m-core-button icon="hide"></w3m-core-button>
+        <br>
+        <br>
         <div id="response-text"></div>
-
+        <br>
         <button id="response-button">Copy</button>
       </div>
     </div>
