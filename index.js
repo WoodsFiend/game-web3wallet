@@ -12,8 +12,8 @@ const chains = [mainnet, polygon]
 const projectId = '8cb9d988c38d5dafd5fbe1f639fd6ff7'
 const path = window.location.href.split('?')[0];
 const metadata = {
-    name: 'Polychain Islands',
-    description: 'Login to Polychain Islands',
+    name: 'Yunipal Islands',
+    description: 'Login to Yunipal Islands',
     url: path, // origin must match your domain & subdomain.
     icons: [path + 'logo.png']
   }
